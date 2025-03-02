@@ -2,6 +2,10 @@ import functions_framework
 import requests
 
 @functions_framework.http
+def hello_world(request):
+    return "Hello World!", 200
+
+@functions_framework.http
 def save_image_local(request):
     """Saves an image from a URL to local temporary storage."""
 
