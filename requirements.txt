@@ -1,1 +1,2 @@
-functions-framework
+functions-framework>=3.0,<4.0
+Flask>=2.0.0,<3.0.0
