@@ -1,5 +1,8 @@
 import functions_framework
 import requests
+from google.cloud import storage
+import io
+
 
 @functions_framework.http
 def hello_world(request):
@@ -28,3 +31,27 @@ def save_image_local(request):
     except Exception as e:
         return f"An unexpected error occurred: {e}", 500
     
+@functions_framework.http
+def fetch_save_image(request):  
+    """HTTP Cloud Function to save an image from a fixed URL."""
+
+    bucket_name = "images-bucket-22"
+    file_name = "clocktower.jpg" 
+
+    image_url = "https://images.pexels.com/photos/27168459/pexels-photo-27168459/free-photo-of-a-clock-tower-is-in-the-foreground-of-a-blurry-photo.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    try:
+        response = requests.get(image_url, stream=True)
+        response.raise_for_status()
+
+        # Upload the image to Cloud Storage
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(file_name)
+        blob.upload_from_file(io.BytesIO(response.content), content_type=response.headers['Content-Type'])
+
+        return f"Image from {image_url} saved to gs://{bucket_name}/{file_name}", 200
+
+    except requests.exceptions.RequestException as e:
+        return f"Error downloading image: {e}", 500
+    except Exception as e:
+        return f"Error saving image: {e}", 500
