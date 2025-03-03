@@ -27,3 +27,4 @@ def save_image_local(request):
         return f"Error downloading image: {e}", 500
     except Exception as e:
         return f"An unexpected error occurred: {e}", 500
+    
